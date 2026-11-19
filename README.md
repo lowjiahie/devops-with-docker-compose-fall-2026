@@ -21,6 +21,14 @@ Stop the project with `docker compose down`. The final application only
 publishes Nginx's port 8000 on localhost; frontend, backend, Redis and
 Postgres have no host port mappings.
 
+## Exercise 2.11: development environment
+
+Exercise `2_11` adds a containerized development environment for my Docker
+Quick Reference application from Part 1. Its source is bind mounted and a
+Python polling reloader applies saved edits without rebuilding the image.
+Run `docker compose up --build -d` in `2_11` and open http://localhost:18091.
+See [2_11/README.md](2_11/README.md) for setup and validation details.
+
 ## Build and publish the example project images
 
 From this repository's root:
