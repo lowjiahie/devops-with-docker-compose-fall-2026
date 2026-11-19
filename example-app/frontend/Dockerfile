@@ -5,7 +5,8 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install && npm install -g serve@14.2.4
 COPY . .
-ENV REACT_APP_BACKEND_URL=http://localhost:8080
+ARG REACT_APP_BACKEND_URL=http://localhost:8080
+ENV REACT_APP_BACKEND_URL=${REACT_APP_BACKEND_URL}
 RUN npm run build
 
 FROM node:16-alpine

@@ -2,18 +2,20 @@ services:
   backend:
     image: jhlow0106/compose-backend:latest
     environment:
-      REQUEST_ORIGIN: http://localhost:5001
+      REQUEST_ORIGIN: http://localhost:8000
       REDIS_HOST: redis
+      POSTGRES_HOST: db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: course-example
+      POSTGRES_DATABASE: postgres
     restart: unless-stopped
     depends_on:
       redis:
         condition: service_healthy
-    ports:
-      - "127.0.0.1:8080:8080"
+      db:
+        condition: service_healthy
   frontend:
-    image: jhlow0106/compose-frontend:latest
-    ports:
-      - "127.0.0.1:5001:5001"
+    image: jhlow0106/compose-frontend:proxy
   redis:
     image: redis:7-alpine
     healthcheck:
@@ -21,3 +23,27 @@ services:
       interval: 2s
       timeout: 2s
       retries: 10
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: course-example
+      POSTGRES_DB: postgres
+    volumes:
+      - ./database:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U postgres -d postgres"]
+      interval: 2s
+      timeout: 2s
+      start_period: 90s
+      retries: 30
+  nginx:
+    image: nginx:1.29-alpine
+    ports:
+      - "127.0.0.1:8000:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - frontend
+      - backend
