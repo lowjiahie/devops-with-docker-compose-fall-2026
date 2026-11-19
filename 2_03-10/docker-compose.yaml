@@ -3,9 +3,21 @@ services:
     image: jhlow0106/compose-backend:latest
     environment:
       REQUEST_ORIGIN: http://localhost:5001
+      REDIS_HOST: redis
+    restart: unless-stopped
+    depends_on:
+      redis:
+        condition: service_healthy
     ports:
       - "127.0.0.1:8080:8080"
   frontend:
     image: jhlow0106/compose-frontend:latest
     ports:
       - "127.0.0.1:5001:5001"
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 2s
+      retries: 10
